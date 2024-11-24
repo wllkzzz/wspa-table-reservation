@@ -14,66 +14,59 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<spring-boot.version>3.3.5</spring-boot.version>
+		<spring-boot.version>3.1.4</spring-boot.version> <!-- Убедитесь, что версия актуальна -->
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<!-- Spring Boot BOM для управления зависимостями -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
-		<!-- Spring Boot Starter dependencies -->
+		<!-- Spring Boot Starter Web (для RESTful веб-сервисов) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
 
-		<!-- Spring Boot DevTools (for development convenience) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- Lombok (simplify Java code) -->
+		<!-- Lombok (для упрощения кода) -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Swagger/OpenAPI -->
+		<!-- Swagger/OpenAPI (для автогенерации документации API) -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.1.0</version>
 		</dependency>
 
-		<!-- PostgreSQL -->
+		<!-- PostgreSQL драйвер -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.6.0</version> <!-- Убедитесь, что версия актуальна -->
+			<version>42.6.0</version>
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Apache POI (Excel generation) -->
+		<!-- Apache POI (для генерации Excel файлов) -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.2.3</version>
 		</dependency>
 
-		<!-- Spring Boot Test (for testing) -->
+		<!-- Spring Boot Test (для тестирования) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -84,6 +77,12 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- Spring Boot Starter Data JPA (для работы с базой данных через JPA) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -96,7 +95,7 @@
 				<version>${spring-boot.version}</version>
 			</plugin>
 
-			<!-- Compiler Plugin -->
+			<!-- Maven Compiler Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -108,4 +107,11 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
 </project>
