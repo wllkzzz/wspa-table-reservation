@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
@@ -29,5 +28,19 @@ public class ReservationController {
                 reservationRequest.getNumberOfPeople(),
                 reservationRequest.getReservationTime()
         );
+    }
+
+    @PutMapping("/{id}")
+    public Reservation updateReservation(@PathVariable Long id, @RequestBody ReservationRequest reservationRequest) {
+        return reservationService.updateReservation(
+                id,
+                reservationRequest.getNumberOfPeople(),
+                reservationRequest.getReservationTime()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservation(id);
     }
 }

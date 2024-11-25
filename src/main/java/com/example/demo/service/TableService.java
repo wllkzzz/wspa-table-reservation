@@ -5,8 +5,6 @@ import com.example.demo.repository.TableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class TableService {

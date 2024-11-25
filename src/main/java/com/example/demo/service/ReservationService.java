@@ -6,6 +6,7 @@ import com.example.demo.models.Table;
 import com.example.demo.repository.ClientRepository;
 import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.TableRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,29 @@ public class ReservationService {
         reservation.setNumberOfPeople(numberOfPeople);
 
         return reservationRepository.save(reservation);
+    }
+
+    public Reservation updateReservation(Long id, int numberOfPeople, LocalDateTime reservationTime) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+
+        Table table = reservation.getTable();
+        table.setSeats(numberOfPeople);
+        tableRepository.save(table);
+
+        reservation.setNumberOfPeople(numberOfPeople);
+        reservation.setReservationTime(reservationTime);
+
+        return reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+
+        tableRepository.delete(reservation.getTable());
+
+        reservationRepository.delete(reservation);
     }
 }
