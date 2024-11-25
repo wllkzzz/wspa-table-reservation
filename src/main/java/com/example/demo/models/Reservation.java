@@ -19,4 +19,6 @@ public class Reservation {
     private Table table;
 
     private LocalDateTime reservationTime;
+
+    private int numberOfPeople;
 }
