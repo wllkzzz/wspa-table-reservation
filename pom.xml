@@ -66,19 +66,6 @@
 			<version>5.2.3</version>
 		</dependency>
 
-		<!-- Spring Boot Test (для тестирования) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- Spring Boot Starter Data JPA (для работы с базой данных через JPA) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
