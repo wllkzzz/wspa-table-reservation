@@ -24,15 +24,21 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
+    @GetMapping("/{id}")
+    public Client getClientById(@PathVariable Long id) {
+        logger.info("Fetching client with ID: {}", id);
+        return clientService.getClientById(id);
+    }
+
     @PostMapping
     public Client createClient(@RequestBody Client client) {
-        logger.info("Creating new client: {}", client.getName());
+        logger.info("Creating new client");
         return clientService.createClient(client);
     }
 
     @PutMapping("/{id}")
     public Client updateClient(@PathVariable Long id, @RequestBody Client client) {
-        logger.info("Updating client with ID: {}", client.getId());
+        logger.info("Updating client with ID: {}", id);
         return clientService.updateClient(id, client);
     }
 

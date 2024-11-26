@@ -32,7 +32,7 @@ public class ClientService {
     }
 
     public Client createClient(Client client) {
-        logger.info("Creating new client: {}", client.getName());
+        logger.info("Creating new client");
         return clientRepository.save(client);
     }
 
