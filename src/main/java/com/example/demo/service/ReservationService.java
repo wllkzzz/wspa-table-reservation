@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.ReservationNotification;
 import com.example.demo.models.Client;
 import com.example.demo.models.Reservation;
 import com.example.demo.models.Table;
@@ -10,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ClientRepository clientRepository;
     private final TableRepository tableRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<Reservation> getAllReservations() {
         logger.info("Fetching all reservations");
@@ -51,8 +54,15 @@ public class ReservationService {
         reservation.setReservationTime(reservationTime);
         reservation.setNumberOfPeople(numberOfPeople);
 
-        logger.info("Reservation created with ID: {}", reservation.getId());
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        messagingTemplate.convertAndSend(
+                "/topic/reservations",
+                new ReservationNotification("Reservation created", LocalDateTime.now(), savedReservation.getId())
+        );
+
+        logger.info("Reservation created with ID: {}", savedReservation.getId());
+        return savedReservation;
     }
 
     public Reservation updateReservation(Long id, int numberOfPeople, LocalDateTime reservationTime) {
@@ -70,8 +80,15 @@ public class ReservationService {
         reservation.setNumberOfPeople(numberOfPeople);
         reservation.setReservationTime(reservationTime);
 
+        Reservation updatedReservation = reservationRepository.save(reservation);
+
+        messagingTemplate.convertAndSend(
+                "/topic/reservations",
+                new ReservationNotification("Reservation updated", LocalDateTime.now(), updatedReservation.getId())
+        );
+
         logger.debug("Reservation updated with {} people", numberOfPeople);
-        return reservationRepository.save(reservation);
+        return updatedReservation;
     }
 
     @Transactional
@@ -85,6 +102,11 @@ public class ReservationService {
 
         tableRepository.delete(reservation.getTable());
         reservationRepository.delete(reservation);
+
+        messagingTemplate.convertAndSend(
+                "/topic/reservations",
+                new ReservationNotification("Reservation deleted", LocalDateTime.now(), reservationId)
+        );
 
         logger.info("Reservation with ID: {} has been deleted", reservationId);
     }
