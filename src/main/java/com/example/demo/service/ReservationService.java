@@ -8,6 +8,8 @@ import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.TableRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,15 +19,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService {
 
+    private static final Logger logger = LogManager.getLogger(ReservationService.class);
+
     private final ReservationRepository reservationRepository;
     private final ClientRepository clientRepository;
     private final TableRepository tableRepository;
 
     public List<Reservation> getAllReservations() {
+        logger.info("Fetching all reservations");
         return reservationRepository.findAll();
     }
 
     public Reservation createReservation(String name, String phone, String email, int numberOfPeople, LocalDateTime reservationTime) {
+        logger.info("Creating reservation for client: {} with {} people", name, numberOfPeople);
         Client client = clientRepository.findByEmail(email).orElseGet(() -> {
             Client newClient = new Client();
             newClient.setName(name);
@@ -45,12 +51,17 @@ public class ReservationService {
         reservation.setReservationTime(reservationTime);
         reservation.setNumberOfPeople(numberOfPeople);
 
+        logger.info("Reservation created with ID: {}", reservation.getId());
         return reservationRepository.save(reservation);
     }
 
     public Reservation updateReservation(Long id, int numberOfPeople, LocalDateTime reservationTime) {
+        logger.info("Updating reservation with ID: {}", id);
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> {
+                    logger.error("Reservation not found with ID: {}", id);
+                    return new IllegalArgumentException("Reservation not found");
+                });
 
         Table table = reservation.getTable();
         table.setSeats(numberOfPeople);
@@ -59,16 +70,22 @@ public class ReservationService {
         reservation.setNumberOfPeople(numberOfPeople);
         reservation.setReservationTime(reservationTime);
 
+        logger.debug("Reservation updated with {} people", numberOfPeople);
         return reservationRepository.save(reservation);
     }
 
     @Transactional
     public void deleteReservation(Long reservationId) {
+        logger.warn("Deleting reservation with ID: {}", reservationId);
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> {
+                    logger.error("Reservation not found with ID: {}", reservationId);
+                    return new IllegalArgumentException("Reservation not found");
+                });
 
         tableRepository.delete(reservation.getTable());
-
         reservationRepository.delete(reservation);
+
+        logger.info("Reservation with ID: {} has been deleted", reservationId);
     }
 }

@@ -4,6 +4,8 @@ import com.example.demo.models.Report;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -16,19 +18,26 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+
+    private static final Logger logger = LogManager.getLogger(ReportService.class);
+
     private final ReportRepository reportRepository;
     private final ReservationRepository reservationRepository;
 
     public Report generateReport(LocalDateTime start, LocalDateTime end) {
+        logger.info("Generating report for reservations between {} and {}", start, end);
         int reservationCount = reservationRepository.countByReservationTimeBetween(start, end);
 
         Report report = new Report();
         report.setGeneratedAt(LocalDateTime.now());
         report.setReservationCount(reservationCount);
+
+        logger.info("Report generated with {} reservations", reservationCount);
         return reportRepository.save(report);
     }
 
     public ByteArrayInputStream generateXlsReport(LocalDateTime start, LocalDateTime end) throws IOException {
+        logger.info("Generating XLS report for reservations between {} and {}", start, end);
         int reservationCount = reservationRepository.countByReservationTimeBetween(start, end);
 
         Workbook workbook = new XSSFWorkbook();
@@ -61,6 +70,7 @@ public class ReportService {
         workbook.write(out);
         workbook.close();
 
+        logger.info("XLS report generated with {} reservations", reservationCount);
         return new ByteArrayInputStream(out.toByteArray());
     }
 }
