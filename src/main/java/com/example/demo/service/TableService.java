@@ -31,7 +31,13 @@ public class TableService {
 
     public void deleteTable(Long id) {
         logger.warn("Deleting table with ID: {}", id);
-        tableRepository.deleteById(id);
+        if (tableRepository.existsById(id)) {
+            tableRepository.deleteById(id);
+            logger.info("Table with ID: {} has been deleted.", id);
+        } else {
+            logger.error("Table not found with ID: {}", id);
+            throw new IllegalArgumentException("Table not found");
+        }
     }
 
     public Table updateTable(Long id, Table updatedTable) {
